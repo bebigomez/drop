@@ -45,6 +45,7 @@ Group habit tracking app ("Drop") built on a `convex-auth-starter` template.
 - Schema: `defineSchema` + `defineTable` with `v.*` validators; indexes defined inline with `.index("by_name", ["field"])`
 - `@convex-dev/better-auth` is a Convex component registered in `convex/convex.config.ts`
 - Convex queries are reactive — UI updates automatically without polling
+- Convex file names: only alphanumeric, underscores, or periods — **no hyphens** (e.g. `habit_mutations.ts`, not `habit-mutations.ts`)
 
 ## Implementation Plan (docs/05-plan-implementacion.md)
 | Step | What | Branch |
