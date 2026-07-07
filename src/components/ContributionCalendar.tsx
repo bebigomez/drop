@@ -19,9 +19,9 @@ const DAY_LABELS = ["Lun", "", "Mié", "", "Vie", "", ""];
 function getCellColor(ratio: number, isFuture: boolean): string {
   if (isFuture) return "bg-gray-100";
   if (ratio === 0) return "bg-gray-200";
-  if (ratio < 0.5) return "bg-green-200";
-  if (ratio < 1) return "bg-green-400";
-  return "bg-green-600";
+  if (ratio < 0.5) return "bg-primary-light";
+  if (ratio < 1) return "bg-primary";
+  return "bg-primary-dark";
 }
 
 function formatTooltip(dateStr: string, completedBy: number, totalMembers: number): string {
@@ -74,7 +74,7 @@ export default function ContributionCalendar({ habitId, logs }: ContributionCale
     try {
       await toggleLog({ habitId: habitId as any, date: dateStr });
     } catch {
-      // error handling not needed for MVP
+      // error handling
     }
   };
 
@@ -119,7 +119,7 @@ export default function ContributionCalendar({ habitId, logs }: ContributionCale
                         onClick={() => handleCellClick(dateStr)}
                         onMouseEnter={(e) => handleMouseEnter(e, dateStr)}
                         onMouseLeave={handleMouseLeave}
-                        className={`block w-[13px] h-[13px] rounded-[2px] ${cellColor} ${isToday ? "ring-2 ring-purple-500 ring-inset" : ""} ${isInRange && !isFuture ? "cursor-pointer hover:opacity-80" : "cursor-default"} transition-colors`}
+                        className={`block w-[13px] h-[13px] rounded-[2px] ${cellColor} ${isToday ? "ring-2 ring-secondary ring-inset" : ""} ${isInRange && !isFuture ? "cursor-pointer hover:opacity-80" : "cursor-default"} transition-colors`}
                         aria-label={dateStr}
                       />
                     </td>
@@ -132,7 +132,7 @@ export default function ContributionCalendar({ habitId, logs }: ContributionCale
       </div>
       {tooltip && (
         <div
-          className="fixed z-50 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow pointer-events-none whitespace-nowrap"
+          className="fixed z-50 px-2.5 py-1.5 text-xs text-white bg-on-surface rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
           style={{ left: tooltip.x, top: tooltip.y, transform: "translate(-50%, -100%)" }}
         >
           {tooltip.text}

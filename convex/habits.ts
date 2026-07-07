@@ -1,6 +1,6 @@
 import { v, ConvexError } from "convex/values";
 import { query } from "./_generated/server";
-import { getCurrentUserOrThrow } from "./auth";
+import { getCurrentUserOrThrow, authComponent } from "./auth";
 
 const DAYS_LOOKBACK = 34;
 
@@ -79,6 +79,17 @@ export const getHabitDetails = query({
       .filter((q) => q.eq(q.field("status"), "accepted"))
       .collect();
 
+    const membersWithProfiles = await Promise.all(
+      members.map(async (member) => {
+        const user = await authComponent.getAnyUserById(ctx, member.userId);
+        return {
+          ...member,
+          name: user?.name ?? member.userId,
+          image: user?.image ?? null,
+        };
+      }),
+    );
+
     const today = new Date().toISOString().slice(0, 10);
     const startDate = getPastDate(DAYS_LOOKBACK, today);
 
@@ -96,7 +107,7 @@ export const getHabitDetails = query({
       logMap.set(log.date, ids);
     }
 
-    const memberUserIds = members.map((m) => m.userId);
+    const memberUserIds = membersWithProfiles.map((m) => m.userId);
 
     const logsByDate: {
       date: string;
@@ -130,7 +141,7 @@ export const getHabitDetails = query({
 
     return {
       habit,
-      members,
+      members: membersWithProfiles,
       logs: logsByDate,
       personalLogs,
       groupStreak,

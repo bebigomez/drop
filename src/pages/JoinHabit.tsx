@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMutation } from "convex/react";
+import { AlertCircle, Users } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 
 export default function JoinHabit() {
@@ -26,19 +27,36 @@ export default function JoinHabit() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 text-center">
-      <h1 className="text-2xl font-bold mb-4">Unirse a un hábito</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <p className="text-gray-600 mb-6">
-        Has sido invitado a unirte a un hábito grupal.
-      </p>
-      <button
-        onClick={handleJoin}
-        disabled={joining}
-        className="bg-purple-600 text-white rounded px-6 py-2 hover:bg-purple-700 disabled:opacity-50"
-      >
-        {joining ? "Uniéndose..." : "Unirse al hábito"}
-      </button>
+    <div className="max-w-md mx-auto mt-12">
+      <div className="bg-surface rounded-2xl p-8 shadow-sm border border-on-surface/5 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center mx-auto mb-6">
+          <Users className="w-8 h-8 text-secondary-dark" strokeWidth={2} />
+        </div>
+        <h1 className="text-2xl font-bold text-on-surface mb-2">Unirse a un hábito</h1>
+        <p className="text-on-surface/50 mb-6">
+          Has sido invitado a unirte a un hábito grupal. ¡Comienza a construir una racha con el equipo!
+        </p>
+        {error && (
+          <div className="flex items-center gap-2 text-sm text-error bg-error/5 rounded-lg px-3 py-2 mb-6 text-left">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            {error}
+          </div>
+        )}
+        <button
+          onClick={handleJoin}
+          disabled={joining}
+          className="w-full bg-primary text-white font-semibold rounded-xl px-6 py-3 hover:bg-primary-dark active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 transition-all duration-200 shadow-sm"
+        >
+          {joining ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              Uniéndose...
+            </span>
+          ) : (
+            "Unirse al hábito"
+          )}
+        </button>
+      </div>
     </div>
   );
 }

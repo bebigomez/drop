@@ -1,3 +1,4 @@
+import { ChartColumnIncreasing, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type HabitCardProps = {
@@ -15,18 +16,26 @@ export default function HabitCard({ habit }: HabitCardProps) {
   return (
     <Link
       to={`/habitos/${habit._id}`}
-      className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+      className="block bg-surface rounded-2xl p-5 shadow-sm hover:shadow-md active:shadow-sm border border-on-surface/5 transition-all duration-200 group"
     >
-      <h3 className="font-semibold text-lg mb-1">{habit.name}</h3>
+      <h3 className="font-bold text-lg text-on-surface group-hover:text-primary transition-colors">
+        {habit.name}
+      </h3>
       {habit.description && (
-        <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+        <p className="text-sm text-on-surface/40 mt-1 line-clamp-2 leading-relaxed">
           {habit.description}
         </p>
       )}
-      <div className="flex items-center gap-4 text-sm text-gray-500">
-        <span>🔥 {habit.personalStreak} días</span>
-        <span>👥 {habit.memberCount} miembros</span>
-        <span className="capitalize">{habit.frequency}</span>
+      <div className="flex items-center gap-4 mt-4 pt-4 border-t border-on-surface/5 text-sm">
+        <span className="flex items-center gap-1.5 text-on-surface/50">
+          <ChartColumnIncreasing className="w-4 h-4" strokeWidth={2} />
+          <span className="font-semibold text-on-surface">{habit.personalStreak}</span>
+          <span>{habit.personalStreak === 1 ? "día" : "días"}</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-on-surface/50">
+          <Users className="w-4 h-4" strokeWidth={2} />
+          {habit.memberCount} {habit.memberCount === 1 ? "miembro" : "miembros"}
+        </span>
       </div>
     </Link>
   );
