@@ -12,12 +12,14 @@ import {
   X,
 } from "lucide-react";
 import { authClient } from "../lib/auth-client";
+import { useToast } from "../hooks/useToast";
 import ContributionCalendar from "../components/ContributionCalendar";
 
 export default function HabitDetail() {
   const { id } = useParams<{ id: string }>();
   const habitId = id as any;
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [copied, setCopied] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [confirmRegenerate, setConfirmRegenerate] = useState(false);
@@ -57,6 +59,7 @@ export default function HabitDetail() {
     try {
       await navigator.clipboard.writeText(inviteUrl);
       setCopied(true);
+      addToast("success", "Link de invitación copiado");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // clipboard not available

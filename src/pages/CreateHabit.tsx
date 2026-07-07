@@ -3,10 +3,12 @@ import { AlertCircle, ChevronLeft } from "lucide-react";
 import { useMutation } from "convex/react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
+import { useToast } from "../hooks/useToast";
 
 export default function CreateHabit() {
   const navigate = useNavigate();
   const createHabit = useMutation(api.habit_mutations.createHabit);
+  const { addToast } = useToast();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -24,6 +26,7 @@ export default function CreateHabit() {
         name,
         description: description || undefined,
       });
+      addToast("success", "Hábito creado correctamente");
       navigate(`/habitos/${habitId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al crear hábito");

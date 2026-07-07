@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useMutation } from "convex/react";
 import { AlertCircle, Users } from "lucide-react";
 import { api } from "../../convex/_generated/api";
+import { useToast } from "../hooks/useToast";
 
 export default function JoinHabit() {
   const { codigo } = useParams<{ codigo: string }>();
   const navigate = useNavigate();
   const joinViaLink = useMutation(api.habit_mutations.joinViaLink);
+  const { addToast } = useToast();
 
   const [error, setError] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
@@ -19,6 +21,7 @@ export default function JoinHabit() {
 
     try {
       const result = await joinViaLink({ inviteCode: codigo });
+      addToast("success", "Te has unido al hábito");
       navigate(`/habitos/${result.habitId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al unirse");

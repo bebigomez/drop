@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useToast } from "../hooks/useToast";
 
 type LogEntry = {
   date: string;
@@ -39,6 +40,7 @@ function formatTooltip(dateStr: string, completedBy: number, totalMembers: numbe
 
 export default function ContributionCalendar({ habitId, logs }: ContributionCalendarProps) {
   const toggleLog = useMutation(api.habit_mutations.toggleLog);
+  const { addToast } = useToast();
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
   const logMap = new Map(logs.map((l) => [l.date, l]));
@@ -72,7 +74,12 @@ export default function ContributionCalendar({ habitId, logs }: ContributionCale
   const handleCellClick = async (dateStr: string) => {
     if (dateStr > todayStr) return;
     try {
-      await toggleLog({ habitId: habitId as any, date: dateStr });
+      const result = await toggleLog({ habitId: habitId as any, date: dateStr });
+      if (result.completed) {
+        addToast("success", "¡Bien hecho!");
+      } else {
+        addToast("info", "Día marcado como pendiente");
+      }
     } catch {
       // error handling
     }
