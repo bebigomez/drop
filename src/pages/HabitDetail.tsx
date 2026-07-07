@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { authClient } from "../lib/auth-client";
 import { useToast } from "../hooks/useToast";
-import ContributionCalendar from "../components/ContributionCalendar";
+import HabitCalendar from "../components/HabitCalendar";
 
 export default function HabitDetail() {
   const { id } = useParams<{ id: string }>();
@@ -132,7 +132,12 @@ export default function HabitDetail() {
       </div>
 
       <div className="bg-surface rounded-2xl p-5 shadow-sm border border-on-surface/5 mb-6">
-        <ContributionCalendar habitId={id!} logs={details.logs} />
+        <HabitCalendar
+          habitId={id!}
+          logs={details.logs}
+          members={details.members}
+          currentUserId={currentUserId ?? ""}
+        />
       </div>
 
       <div className="bg-surface rounded-2xl p-5 shadow-sm border border-on-surface/5">
