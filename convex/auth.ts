@@ -37,7 +37,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 export async function getCurrentUserOrThrow(ctx: GenericCtx<DataModel>) {
   const user = await authComponent.getAuthUser(ctx);
   if (!user) throw new ConvexError("No autenticado");
-  return user as typeof user & { userId: string };
+  return user._id;
 }
 
 export const getCurrentUser = query({

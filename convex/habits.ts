@@ -7,11 +7,11 @@ const DAYS_LOOKBACK = 34;
 export const getUserHabits = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const memberships = await ctx.db
       .query("habitMembers")
-      .withIndex("by_user", (q) => q.eq("userId", user.userId))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .filter((q) => q.eq(q.field("status"), "accepted"))
       .collect();
 
@@ -32,7 +32,7 @@ export const getUserHabits = query({
         const personalLogs = await ctx.db
           .query("habitLogs")
           .withIndex("by_habit_user_date", (q) =>
-            q.eq("habitId", membership.habitId).eq("userId", user.userId),
+            q.eq("habitId", membership.habitId).eq("userId", userId),
           )
           .filter((q) => q.gte(q.field("date"), pastDate))
           .collect();
@@ -57,12 +57,12 @@ export const getUserHabits = query({
 export const getHabitDetails = query({
   args: { habitId: v.id("habits") },
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const membership = await ctx.db
       .query("habitMembers")
       .withIndex("by_habit_user", (q) =>
-        q.eq("habitId", args.habitId).eq("userId", user.userId),
+        q.eq("habitId", args.habitId).eq("userId", userId),
       )
       .first();
 
@@ -122,7 +122,7 @@ export const getHabitDetails = query({
     }
 
     const personalLogs = logs
-      .filter((l) => l.userId === user.userId)
+      .filter((l) => l.userId === userId)
       .map((l) => ({ date: l.date, completed: l.completed }));
 
     const groupStreak = calculateGroupStreak(logsByDate, memberUserIds.length);
@@ -142,12 +142,12 @@ export const getHabitDetails = query({
 export const getUnreadNotifications = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     return ctx.db
       .query("notifications")
       .withIndex("by_user_unread", (q) =>
-        q.eq("userId", user.userId).eq("read", false),
+        q.eq("userId", userId).eq("read", false),
       )
       .order("desc")
       .collect();
