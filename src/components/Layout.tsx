@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Bell, BellRing, Droplet, LogOut } from "lucide-react";
+import { Bell, BellRing, Droplet, LogOut, X } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { authClient } from "../lib/auth-client";
@@ -16,6 +16,7 @@ export default function Layout() {
 
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const hasOpenedRef = useRef(false);
 
   const unreadCount = notifications?.length ?? 0;
 
@@ -29,14 +30,17 @@ export default function Layout() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleToggleNotifications = () => {
-    const next = !showNotifications;
-    setShowNotifications(next);
-    if (next && notifications && notifications.length > 0) {
+  useEffect(() => {
+    if (!showNotifications && hasOpenedRef.current && notifications && notifications.length > 0) {
       markNotificationsRead({
         notificationIds: notifications.map((n) => n._id),
       });
     }
+  }, [showNotifications, notifications, markNotificationsRead]);
+
+  const handleToggleNotifications = () => {
+    hasOpenedRef.current = true;
+    setShowNotifications((prev) => !prev);
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -93,8 +97,15 @@ export default function Layout() {
 
                 {showNotifications && (
                   <div className="absolute right-0 top-full mt-2 w-80 bg-surface rounded-2xl shadow-xl border border-on-surface/10 overflow-hidden z-50">
-                    <div className="p-3 border-b border-on-surface/10">
+                    <div className="p-3 border-b border-on-surface/10 flex items-center justify-between">
                       <p className="text-sm font-semibold text-on-surface">Notificaciones</p>
+                      <button
+                        onClick={() => setShowNotifications(false)}
+                        className="p-1 text-on-surface/30 hover:text-on-surface rounded-lg hover:bg-on-surface/5 transition-colors"
+                        aria-label="Cerrar notificaciones"
+                      >
+                        <X className="w-4 h-4" strokeWidth={2} />
+                      </button>
                     </div>
                     {notifications && notifications.length > 0 ? (
                       <ul className="max-h-64 overflow-y-auto">
