@@ -7,7 +7,8 @@ export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -22,7 +23,11 @@ export default function AuthForm() {
         const { error: err } = await authClient.signIn.email({ email, password });
         if (err) setError(err.message ?? "Error al iniciar sesión");
       } else {
-        const { error: err } = await authClient.signUp.email({ email, password, name });
+        const { error: err } = await authClient.signUp.email({
+          email,
+          password,
+          name: `${firstName} ${lastName}`,
+        });
         if (err) setError(err.message ?? "Error al registrarse");
       }
     } finally {
@@ -71,21 +76,39 @@ export default function AuthForm() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {mode === "signUp" && (
-            <div className="relative">
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder=" "
-                required
-                className={inputClass("name")}
-                onFocus={() => setFocusedField("name")}
-                onBlur={() => setFocusedField(null)}
-              />
-              <label htmlFor="name" className={labelClass("name", name)}>
-                Nombre
-              </label>
+            <div className="flex gap-4">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder=" "
+                  required
+                  className={inputClass("firstName")}
+                  onFocus={() => setFocusedField("firstName")}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <label htmlFor="firstName" className={labelClass("firstName", firstName)}>
+                  Nombre
+                </label>
+              </div>
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder=" "
+                  required
+                  className={inputClass("lastName")}
+                  onFocus={() => setFocusedField("lastName")}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <label htmlFor="lastName" className={labelClass("lastName", lastName)}>
+                  Apellido
+                </label>
+              </div>
             </div>
           )}
 

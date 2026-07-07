@@ -40,7 +40,10 @@ export default function Layout() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-white/70 hidden sm:block truncate max-w-[160px]">
-              {session?.user?.name ?? session?.user?.email}
+              {(() => {
+                const u = session?.user;
+                return u?.name ?? u?.email;
+              })()}
             </span>
             <button
               onClick={() => authClient.signOut()}
