@@ -80,6 +80,7 @@ export default function ContributionCalendar({ habitId, logs }: ContributionCale
       } else {
         addToast("info", "Día marcado como pendiente");
       }
+      result.achievements.forEach((a) => addToast("success", a.message));
     } catch {
       // error handling
     }

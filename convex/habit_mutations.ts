@@ -60,7 +60,10 @@ export const toggleLog = mutation({
     habitId: v.id("habits"),
     date: v.string(),
   },
-  returns: v.object({ completed: v.boolean() }),
+  returns: v.object({
+    completed: v.boolean(),
+    achievements: v.array(v.object({ type: v.string(), message: v.string() })),
+  }),
   handler: async (ctx, args) => {
     const userId = await getCurrentUserOrThrow(ctx);
 
@@ -109,9 +112,9 @@ export const toggleLog = mutation({
       });
     }
 
-    await checkAndAwardAchievements(ctx, args.habitId, userId);
+    const achievements = await checkAndAwardAchievements(ctx, args.habitId, userId);
 
-    return { completed };
+    return { completed, achievements };
   },
 });
 

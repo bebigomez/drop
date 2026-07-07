@@ -6,7 +6,9 @@ export async function checkAndAwardAchievements(
   ctx: GenericMutationCtx<DataModel>,
   habitId: Id<"habits">,
   userId: string,
-) {
+): Promise<{ type: string; message: string }[]> {
+  const awarded: { type: string; message: string }[] = [];
+
   const existingAchievements = await ctx.db
     .query("achievements")
     .withIndex("by_habit_user", (q) =>
@@ -42,6 +44,8 @@ export async function checkAndAwardAchievements(
       habitId,
       message: "Logro desbloqueado: primer día completado",
     });
+
+    awarded.push({ type: "first_log", message: "Logro desbloqueado: primer día completado" });
   }
 
   const streakThresholds = [
@@ -66,6 +70,8 @@ export async function checkAndAwardAchievements(
         habitId,
         message: `Logro desbloqueado: racha de ${threshold} días`,
       });
+
+      awarded.push({ type, message: `Logro desbloqueado: racha de ${threshold} días` });
     }
   }
 
@@ -83,6 +89,8 @@ export async function checkAndAwardAchievements(
       habitId,
       message: "Logro desbloqueado: semana perfecta",
     });
+
+    awarded.push({ type: "perfect_week", message: "Logro desbloqueado: semana perfecta" });
   }
 
   const logsByDate = await ctx.db
@@ -136,6 +144,8 @@ export async function checkAndAwardAchievements(
       habitId,
       message: "Logro desbloqueado: racha grupal de 3 días",
     });
+
+    awarded.push({ type: "group_streak_3", message: "Logro desbloqueado: racha grupal de 3 días" });
   }
 
   if (!existingTypes.has("group_streak_7") && groupStreak >= 7) {
@@ -152,6 +162,8 @@ export async function checkAndAwardAchievements(
       habitId,
       message: "Logro desbloqueado: racha grupal de 7 días",
     });
+
+    awarded.push({ type: "group_streak_7", message: "Logro desbloqueado: racha grupal de 7 días" });
   }
 
   if (!existingTypes.has("group_perfect_week") && groupStreak >= 7) {
@@ -168,7 +180,11 @@ export async function checkAndAwardAchievements(
       habitId,
       message: "Logro desbloqueado: semana grupal perfecta",
     });
+
+    awarded.push({ type: "group_perfect_week", message: "Logro desbloqueado: semana grupal perfecta" });
   }
+
+  return awarded;
 }
 
 function calculateStreak(
