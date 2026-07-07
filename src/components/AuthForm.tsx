@@ -25,6 +25,8 @@ export default function AuthForm({ inviteCode }: AuthFormProps) {
     inviteCode ? { inviteCode } : "skip",
   );
 
+  console.log('habit info -> ', habitInfo)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
