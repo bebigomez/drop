@@ -10,9 +10,9 @@ npm run lint       # ESLint
 
 ## Project State
 Group habit tracking app ("Drop") built on a `convex-auth-starter` template.
-- **Done**: Tailwind v4 installed, docs written
-- **Next**: Convex schema → backend functions → routing → pages → calendar → invites → toasts → achievements
-- **Current branch**: `feat/setup-tailwind` (not yet merged to main)
+- **Done**: Tailwind v4, schema + backend, routing + pages scaffolding
+- **Next**: Calendar → Invitations → Toasts → Achievements
+- **Current branch**: `feat/routing-and-pages`
 
 ## Architecture
 - **Stack**: React 19 + Vite 8 + React Router (planned, not yet installed) + Tailwind v4 + Convex + Better Auth
@@ -34,6 +34,7 @@ Group habit tracking app ("Drop") built on a `convex-auth-starter` template.
 - `noUnusedLocals` / `noUnusedParameters` → unused vars/params cause compilation errors
 - `erasableSyntaxOnly` → no `enum` keyword, use union types instead
 - `build` runs `tsc -b` first → type errors block production build
+- `tsconfig.app.json` needs `"types": ["vite/client", "node"]` because `convex/_generated/api.d.ts` imports convex source files that use `process`; without `node` types, `tsc -b` fails
 
 ## Tailwind CSS v4
 - Vite plugin (`@tailwindcss/vite`) in `vite.config.ts` — no PostCSS, no `tailwind.config.js`
@@ -59,5 +60,5 @@ Group habit tracking app ("Drop") built on a `convex-auth-starter` template.
 | 9 | Achievements | `feat/gamification` |
 
 ## Resources
-- 6 spec docs in `docs/` — consult for schema, API, routes, component design, plan, branching
+- 7 spec docs in `docs/` — consult for schema, API, routes, component design, plan, branching
 - `docs/06-plan-desarrollo.md` for full branch/commit plan

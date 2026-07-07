@@ -21,7 +21,7 @@ export const createHabit = mutation({
   },
   returns: v.id("habits"),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     let inviteCode: string;
     let existing: Doc<"habits"> | null;
@@ -37,7 +37,7 @@ export const createHabit = mutation({
     const habitId = await ctx.db.insert("habits", {
       name: args.name,
       description: args.description,
-      createdBy: user.userId,
+      createdBy: userId,
       frequency: "daily",
       inviteCode,
       createdAt: Date.now(),
@@ -45,9 +45,9 @@ export const createHabit = mutation({
 
     await ctx.db.insert("habitMembers", {
       habitId,
-      userId: user.userId,
+      userId,
       status: "accepted",
-      invitedBy: user.userId,
+      invitedBy: userId,
       joinedAt: Date.now(),
     });
 
@@ -62,12 +62,12 @@ export const toggleLog = mutation({
   },
   returns: v.object({ completed: v.boolean() }),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const membership = await ctx.db
       .query("habitMembers")
       .withIndex("by_habit_user", (q) =>
-        q.eq("habitId", args.habitId).eq("userId", user.userId),
+        q.eq("habitId", args.habitId).eq("userId", userId),
       )
       .first();
 
@@ -85,7 +85,7 @@ export const toggleLog = mutation({
       .withIndex("by_habit_user_date", (q) =>
         q
           .eq("habitId", args.habitId)
-          .eq("userId", user.userId)
+          .eq("userId", userId)
           .eq("date", args.date),
       )
       .first();
@@ -102,14 +102,14 @@ export const toggleLog = mutation({
       completed = true;
       await ctx.db.insert("habitLogs", {
         habitId: args.habitId,
-        userId: user.userId,
+        userId,
         date: args.date,
         completed,
         updatedAt: Date.now(),
       });
     }
 
-    await checkAndAwardAchievements(ctx, args.habitId, user.userId);
+    await checkAndAwardAchievements(ctx, args.habitId, userId);
 
     return { completed };
   },
@@ -121,11 +121,11 @@ export const regenerateInviteCode = mutation({
   },
   returns: v.object({ inviteCode: v.string() }),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const habit = await ctx.db.get(args.habitId);
     if (!habit) throw new ConvexError("Hábito no encontrado");
-    if (habit.createdBy !== user.userId) {
+    if (habit.createdBy !== userId) {
       throw new ConvexError("Solo el creador puede regenerar el código");
     }
 
@@ -152,7 +152,7 @@ export const joinViaLink = mutation({
   },
   returns: v.object({ habitId: v.id("habits") }),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const habit = await ctx.db
       .query("habits")
@@ -164,7 +164,7 @@ export const joinViaLink = mutation({
     const existing = await ctx.db
       .query("habitMembers")
       .withIndex("by_habit_user", (q) =>
-        q.eq("habitId", habit._id).eq("userId", user.userId),
+        q.eq("habitId", habit._id).eq("userId", userId),
       )
       .first();
 
@@ -172,7 +172,7 @@ export const joinViaLink = mutation({
 
     await ctx.db.insert("habitMembers", {
       habitId: habit._id,
-      userId: user.userId,
+      userId,
       status: "accepted",
       invitedBy: habit.createdBy,
       joinedAt: Date.now(),
@@ -228,7 +228,7 @@ export const leaveHabit = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const habit = await ctx.db.get(args.habitId);
     if (!habit) throw new ConvexError("Hábito no encontrado");
@@ -236,17 +236,17 @@ export const leaveHabit = mutation({
     const membership = await ctx.db
       .query("habitMembers")
       .withIndex("by_habit_user", (q) =>
-        q.eq("habitId", args.habitId).eq("userId", user.userId),
+        q.eq("habitId", args.habitId).eq("userId", userId),
       )
       .first();
 
     if (!membership) throw new ConvexError("No eres miembro de este hábito");
 
-    if (habit.createdBy === user.userId) {
+    if (habit.createdBy === userId) {
       const otherMembers = await ctx.db
         .query("habitMembers")
         .withIndex("by_habit", (q) => q.eq("habitId", args.habitId))
-        .filter((q) => q.neq(q.field("userId"), user.userId))
+        .filter((q) => q.neq(q.field("userId"), userId))
         .collect();
 
       if (otherMembers.length > 0) {
@@ -278,14 +278,14 @@ export const removeMember = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     const habit = await ctx.db.get(args.habitId);
     if (!habit) throw new ConvexError("Hábito no encontrado");
-    if (habit.createdBy !== user.userId) {
+    if (habit.createdBy !== userId) {
       throw new ConvexError("Solo el creador puede expulsar miembros");
     }
-    if (args.memberUserId === user.userId) {
+    if (args.memberUserId === userId) {
       throw new ConvexError("No puedes expulsarte a ti mismo");
     }
 
@@ -308,11 +308,11 @@ export const markNotificationsRead = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const userId = await getCurrentUserOrThrow(ctx);
 
     for (const id of args.notificationIds) {
       const notification = await ctx.db.get(id);
-      if (notification && notification.userId === user.userId) {
+      if (notification && notification.userId === userId) {
         await ctx.db.patch(id, { read: true });
       }
     }
