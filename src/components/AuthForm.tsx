@@ -17,7 +17,7 @@ export default function AuthForm({ inviteCode }: AuthFormProps) {
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  // const [googleLoading, setGoogleLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const habitInfo = useQuery(
@@ -48,16 +48,16 @@ export default function AuthForm({ inviteCode }: AuthFormProps) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setError(null);
-    setGoogleLoading(true);
-    try {
-      const { error: err } = await authClient.signIn.social({ provider: "google", callbackURL: "/" });
-      if (err) setError(err.message ?? "Error al iniciar con Google");
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
+  // const handleGoogleSignIn = async () => {
+  //   setError(null);
+  //   setGoogleLoading(true);
+  //   try {
+  //     const { error: err } = await authClient.signIn.social({ provider: "google", callbackURL: "/" });
+  //     if (err) setError(err.message ?? "Error al iniciar con Google");
+  //   } finally {
+  //     setGoogleLoading(false);
+  //   }
+  // };
 
   const inputClass = (field: string) => `
     peer w-full bg-transparent text-on-surface outline-none transition-all duration-200
@@ -222,7 +222,7 @@ export default function AuthForm({ inviteCode }: AuthFormProps) {
           </button>
         </form>
 
-        <div className="relative my-6">
+        {/* <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-on-surface/10" />
           </div>
@@ -248,7 +248,7 @@ export default function AuthForm({ inviteCode }: AuthFormProps) {
             </svg>
           )}
           Google
-        </button>
+        </button> */}
 
         <p className="text-center text-sm text-on-surface/40 mt-6">
           {mode === "signIn" ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}
