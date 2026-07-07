@@ -82,9 +82,12 @@ export const getHabitDetails = query({
     const membersWithProfiles = await Promise.all(
       members.map(async (member) => {
         const user = await authComponent.getAnyUserById(ctx, member.userId);
+        const userData = user as any;
         return {
           ...member,
           name: user?.name ?? member.userId,
+          firstName: userData?.firstName ?? user?.name?.split(" ")[0] ?? member.userId,
+          lastName: userData?.lastName ?? user?.name?.split(" ").slice(1).join(" ") ?? "",
           image: user?.image ?? null,
         };
       }),
