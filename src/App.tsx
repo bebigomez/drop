@@ -21,6 +21,9 @@ const router = createBrowserRouter([
   },
 ]);
 
+const inviteCodeMatch = window.location.pathname.match(/^\/unirse\/(.+)/);
+const currentInviteCode = inviteCodeMatch?.[1] ?? null;
+
 function App() {
   return (
     <>
@@ -54,7 +57,7 @@ function App() {
                 Hábitos que florecen<br />en grupo.
               </p>
 
-              <div className="mt-10 space-y-5">
+              <div className={`mt-10 space-y-5 ${currentInviteCode ? "hidden lg:block" : ""}`}>
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Activity className="w-5 h-5 text-primary" strokeWidth={2} />
@@ -87,7 +90,7 @@ function App() {
           </div>
 
           <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
-            <AuthForm />
+            <AuthForm inviteCode={currentInviteCode} />
           </div>
         </div>
       </Unauthenticated>

@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Users } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { authClient } from "../lib/auth-client";
 
-export default function AuthForm() {
+type AuthFormProps = {
+  inviteCode?: string | null;
+};
+
+export default function AuthForm({ inviteCode }: AuthFormProps) {
   const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,6 +19,11 @@ export default function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  const habitInfo = useQuery(
+    api.habits.getHabitByInviteCode,
+    inviteCode ? { inviteCode } : "skip",
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +84,36 @@ export default function AuthForm() {
         <p className="text-sm text-on-surface/40 text-center mb-8">
           {mode === "signIn" ? "Ingresa a tu cuenta para continuar" : "Regístrate para empezar"}
         </p>
+
+        {inviteCode && habitInfo === undefined && (
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+            <span className="text-sm text-on-surface/40">Buscando hábito...</span>
+          </div>
+        )}
+
+        {inviteCode && habitInfo === null && (
+          <div className="flex items-center gap-2 text-sm text-error bg-error/5 rounded-lg px-3 py-2 mb-4">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            El link de invitación no es válido
+          </div>
+        )}
+
+        {inviteCode && habitInfo && (
+          <div className="bg-primary/5 border border-primary/10 rounded-xl px-4 py-3 mb-4">
+            <p className="text-sm font-semibold text-primary mb-0.5">
+              Has sido invitado a <strong>{habitInfo.name}</strong>
+            </p>
+            <p className="text-xs text-on-surface/40 flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5" strokeWidth={2} />
+              {habitInfo.memberCount} miembro{habitInfo.memberCount !== 1 ? "s" : ""}
+              {habitInfo.description && ` · ${habitInfo.description}`}
+            </p>
+            <p className="text-xs text-on-surface/30 mt-1.5">
+              Inicia sesión o regístrate para aceptar la invitación
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {mode === "signUp" && (

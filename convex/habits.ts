@@ -168,6 +168,30 @@ export const getUnreadNotifications = query({
   },
 });
 
+export const getHabitByInviteCode = query({
+  args: { inviteCode: v.string() },
+  handler: async (ctx, args) => {
+    const habit = await ctx.db
+      .query("habits")
+      .withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+      .first();
+
+    if (!habit) return null;
+
+    const members = await ctx.db
+      .query("habitMembers")
+      .withIndex("by_habit", (q) => q.eq("habitId", habit._id))
+      .filter((q) => q.eq(q.field("status"), "accepted"))
+      .collect();
+
+    return {
+      name: habit.name,
+      description: habit.description,
+      memberCount: members.length,
+    };
+  },
+});
+
 function getPastDate(daysAgo: number, fromDate: string): string {
   const d = new Date(fromDate);
   d.setDate(d.getDate() - daysAgo);
