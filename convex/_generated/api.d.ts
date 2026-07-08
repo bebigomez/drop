@@ -10,6 +10,7 @@
 
 import type * as achievements from "../achievements.js";
 import type * as auth from "../auth.js";
+import type * as email from "../email.js";
 import type * as habit_mutations from "../habit_mutations.js";
 import type * as habits from "../habits.js";
 import type * as http from "../http.js";
@@ -25,6 +26,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   auth: typeof auth;
+  email: typeof email;
   habit_mutations: typeof habit_mutations;
   habits: typeof habits;
   http: typeof http;

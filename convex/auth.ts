@@ -3,9 +3,10 @@ import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
-import { betterAuth } from "better-auth/minimal";
+import { betterAuth } from "better-auth";
 import { ConvexError } from "convex/values";
 import authConfig from "./auth.config";
+import { sendVerificationEmail } from "./email";
 
 const siteUrl = process.env.SITE_URL!;
 
@@ -17,7 +18,15 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: false,
+      requireEmailVerification: true,
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      expiresIn: 3600,
+      sendVerificationEmail: async ({ user, url }) => {
+        await sendVerificationEmail({ to: user.email, url });
+      },
     },
     plugins: [
       crossDomain({ siteUrl }),
