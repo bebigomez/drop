@@ -19,6 +19,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
+      autoSignIn: false,
     },
     emailVerification: {
       sendOnSignUp: true,

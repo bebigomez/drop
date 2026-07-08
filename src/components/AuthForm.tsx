@@ -45,13 +45,19 @@ export default function AuthForm({ inviteCode }: AuthFormProps) {
           email,
           password,
           name: `${firstName} ${lastName}`,
+        }, {
+          disableSignal: true,
         });
-        if (err) {
+        if (err && err.code !== "EMAIL_NOT_VERIFIED") {
           setError(err.message ?? "Error al registrarse");
         } else {
           setVerifiedEmail(email);
         }
       }
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Error de conexión. Intenta de nuevo.",
+      );
     } finally {
       setLoading(false);
     }
