@@ -48,6 +48,7 @@ export default function Layout() {
   const navLinks = [
     { path: "/", label: "Mis hábitos" },
     { path: "/habitos/nuevo", label: "Nuevo hábito" },
+    { path: "/configuracion", label: "Configuración" },
   ];
 
   return (
@@ -127,12 +128,25 @@ export default function Layout() {
                 )}
               </div>
 
-              <span className="text-sm text-white/70 hidden sm:block truncate max-w-[160px]">
-                {(() => {
-                  const u = session?.user;
-                  return u?.name ?? u?.email;
-                })()}
-              </span>
+              <Link
+                to="/configuracion"
+                className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
+              >
+                {session?.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt=""
+                    className="w-7 h-7 rounded-full object-cover ring-2 ring-white/20"
+                  />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-xs font-bold text-white/70">
+                    {session?.user?.name?.charAt(0)?.toUpperCase() ?? "?"}
+                  </div>
+                )}
+                <span className="hidden sm:block truncate max-w-[140px]">
+                  {session?.user?.name ?? session?.user?.email}
+                </span>
+              </Link>
               <button
                 onClick={() => authClient.signOut()}
                 className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors"

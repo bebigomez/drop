@@ -14,6 +14,7 @@ import type * as habit_mutations from "../habit_mutations.js";
 import type * as habits from "../habits.js";
 import type * as http from "../http.js";
 import type * as notifications from "../notifications.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   habits: typeof habits;
   http: typeof http;
   notifications: typeof notifications;
+  users: typeof users;
 }>;
 
 /**

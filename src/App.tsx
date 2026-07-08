@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateHabit from "./pages/CreateHabit";
 import HabitDetail from "./pages/HabitDetail";
 import JoinHabit from "./pages/JoinHabit";
+import Settings from "./pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: "habitos/nuevo", element: <CreateHabit /> },
       { path: "habitos/:id", element: <HabitDetail /> },
       { path: "unirse/:codigo", element: <JoinHabit /> },
+      { path: "configuracion", element: <Settings /> },
     ],
   },
 ]);
