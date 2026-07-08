@@ -12,7 +12,7 @@ export async function sendVerificationEmail(params: { to: string; url: string })
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Drop <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM_EMAIL ?? "Drop <onboarding@resend.dev>",
       to: params.to,
       subject: "Verifica tu email en Drop",
       html: `
