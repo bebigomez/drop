@@ -139,7 +139,7 @@ export const getHabitDetails = query({
       .filter((l) => l.userId === userId)
       .map((l) => ({ date: l.date, completed: l.completed }));
 
-    const groupStreak = calculateGroupStreak(logsByDate, memberUserIds.length);
+    const groupStreak = calculateGroupStreak(logsByDate, memberUserIds.length, today);
     const personalStreak = calculatePersonalStreak(personalLogs, today);
 
     return {
@@ -212,9 +212,7 @@ function calculatePersonalStreak(
 
     if (log && log.completed) {
       streak++;
-    } else if (dateStr === today) {
-      return 0;
-    } else {
+    } else if (dateStr !== today) {
       break;
     }
 
@@ -227,6 +225,7 @@ function calculatePersonalStreak(
 function calculateGroupStreak(
   logsByDate: { date: string; completedBy: number; totalMembers: number }[],
   totalMembers: number,
+  today: string,
 ): number {
   const sorted = [...logsByDate].sort((a, b) => b.date.localeCompare(a.date));
   let streak = 0;
@@ -234,7 +233,7 @@ function calculateGroupStreak(
   for (const day of sorted) {
     if (day.completedBy === totalMembers) {
       streak++;
-    } else {
+    } else if (day.date !== today) {
       break;
     }
   }

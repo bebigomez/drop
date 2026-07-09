@@ -128,7 +128,7 @@ export async function checkAndAwardAchievements(
     cursor.setDate(cursor.getDate() + 1);
   }
 
-  const groupStreak = calculateGroupStreak(allDays, totalMembers);
+  const groupStreak = calculateGroupStreak(allDays, totalMembers, today);
 
   if (!existingTypes.has("group_streak_3") && groupStreak >= 3) {
     await ctx.db.insert("achievements", {
@@ -199,9 +199,7 @@ function calculateStreak(
     const dateStr = d.toISOString().slice(0, 10);
     if (logDates.has(dateStr)) {
       streak++;
-    } else if (dateStr === today) {
-      return 0;
-    } else {
+    } else if (dateStr !== today) {
       break;
     }
     d.setDate(d.getDate() - 1);
@@ -213,6 +211,7 @@ function calculateStreak(
 function calculateGroupStreak(
   days: { date: string; completedBy: number }[],
   totalMembers: number,
+  today: string,
 ): number {
   const sorted = [...days].sort((a, b) => b.date.localeCompare(a.date));
   let streak = 0;
@@ -220,7 +219,7 @@ function calculateGroupStreak(
   for (const day of sorted) {
     if (day.completedBy === totalMembers) {
       streak++;
-    } else {
+    } else if (day.date !== today) {
       break;
     }
   }
